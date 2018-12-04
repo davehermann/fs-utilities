@@ -1,0 +1,8 @@
+{
+  "name": "pathgenerator",
+  "version": "0.1.0",
+  "description": "Move my path generation Promise code to a separate module",
+  "main": "pathgen.js",
+  "author": "Dave Hermann",
+  "license": "MIT"
+}
