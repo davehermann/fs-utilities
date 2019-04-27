@@ -2,6 +2,8 @@
 const fs = require(`fs`),
     path = require(`path`);
 
+const appFs = require(`./fs`);
+
 function ensurePath(fullPathWithFile) {
     let pathParts = path.dirname(fullPathWithFile).split(path.sep);
 
@@ -48,3 +50,6 @@ function createMissingDirectories(pathParts, confirmedRoot) {
 }
 
 module.exports.EnsurePathForFile = ensurePath;
+
+// Promisified versions of FS methods
+module.exports.fs = appFs;
