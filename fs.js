@@ -85,3 +85,4 @@ module.exports.readFile = readFile;
 module.exports.readdir = readdir;
 module.exports.stat = stat;
 module.exports.lstat = lstat;
+module.exports.nodeFs = fs;
