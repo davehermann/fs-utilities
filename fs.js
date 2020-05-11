@@ -80,9 +80,25 @@ function lstat(filePath) {
     });
 }
 
+/**
+ * Use a Promise to implement readlink
+ * @param {String | Buffer | URL} path
+ */
+function readlink(path) {
+    return new Promise((resolve, reject) => {
+        fs.readlink(path, (err, linkData) => {
+            if (!!err)
+                reject(err);
+            else
+                resolve(linkData);
+        });
+    });
+}
+
 module.exports.writeFile = writeFile;
 module.exports.readFile = readFile;
 module.exports.readdir = readdir;
 module.exports.stat = stat;
 module.exports.lstat = lstat;
+module.exports.readlink = readlink;
 module.exports.nodeFs = fs;
