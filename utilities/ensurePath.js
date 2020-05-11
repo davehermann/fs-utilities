@@ -1,5 +1,5 @@
 // Node Modules
-const fs = require(`fs`),
+const fs = require(`../fs`),
     path = require(`path`);
 
 /**
@@ -27,24 +27,20 @@ function createMissingDirectories(pathParts, confirmedRoot) {
 
         let checkPath = path.join(confirmedRoot, pathParts.shift());
 
-        return new Promise((resolve, reject) => {
-            // Check for the directory
-            fs.stat(checkPath, (err) => {
-                if (!!err) {
-                    if (err.code == `ENOENT`)
-                        resolve(false);
-                    else
-                        reject(err);
-                } else
-                    resolve(true);
-            });
-        })
+        return fs.stat(checkPath)
+            .then(() => { return true; })
+            .catch(err => {
+                if (err.code == `ENOENT`)
+                    return Promise.resolve(false);
+
+                return Promise.reject(err);
+            })
             .then(directoryExists => {
                 let pCreateDirectory = Promise.resolve();
 
                 if (!directoryExists)
                     pCreateDirectory = new Promise((resolve, reject) => {
-                        fs.mkdir(checkPath, (err) => {
+                        fs.nodeFs.mkdir(checkPath, (err) => {
                             if (!!err)
                                 reject(err);
                             else
