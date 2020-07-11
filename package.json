@@ -9,6 +9,9 @@
     "type": "git",
     "url": "https://github.com/davehermann/fs-utilities"
   },
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "scripts": {
     "test": "./node_modules/.bin/mocha ./tests/test.js"
   },
