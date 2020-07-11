@@ -1,59 +1,66 @@
 // Node Modules
 const path = require(`path`);
+const { readdir, stat } = require("fs").promises;
 
-// Library Modules
-const { readdir, stat } = require(`../fs`);
+/**
+ * Read the items in a directory, and traverse subdirectories
+ * @param {String} pathToRead - Root path to check
+ * @param {Object} options - Read options
+ * @param {Array<String>} options.returnProperties - List of stat properties to return with data
+ * @returns {Array<Object>} List of found file system objects, with stat properties, subdirectories supply the same data
+ */
+async function readSubDirectories(pathToRead, options) {
+    // Get the list of file system objects in the current directory
+    const directoryItems = await readdir(pathToRead);
 
-function readSubDirectories(pathToRead) {
-    if (typeof pathToRead == `string`)
-        pathToRead = [{ directory: pathToRead }];
+    // Get data about all file system objects in the directory
+    const directoryObjects = await checkContents(directoryItems, pathToRead, options);
 
-    console.log(pathToRead);
+    // Loop through each file system object
+    for (let idxObjects = 0, total = directoryObjects.length; idxObjects < total; idxObjects++) {
+        const currentObject = directoryObjects[idxObjects];
 
-    if (pathToRead.length > 0) {
-        let nextPath = pathToRead.shift();
+        // For subdirectories, read them
+        if (currentObject.isDirectory)
+            currentObject.items = await readSubDirectories(currentObject.objectPath, options);
+    }
 
-        // Read the current directory
-        return readdir(nextPath.directory)
-            // Check all objects to see if they are directories
-            .then(foundItems => findSubDirectories(nextPath.directory, foundItems))
-            // Perform readSubDirectories on any directory found
-            .then(separateItems => {
-                console.log(separateItems);
-                // return readSubDirectories(separateItems.directories);
-            });
-    } else
-        return Promise.resolve();
+    return directoryObjects;
 }
 
 /**
- * Find, and separately track, sub-directories in a list of file system objects
- * @param {*} remainingItems
- * @returns {Promise<object>} The Promise returns an object of {files, directories}
+ * Get stat data, and add additional needed data, to file system objects
+ * @param {Array<String>} itemList - list of file system object names in the current directory
+ * @param {String} inPath - current directory
+ * @param {Object} options - Read options, passed directly from readSubDirectories
+ * @param {Array<Object>} objectData - list of object details for the current directory
+ * @returns {Promise<Array<Object>>} Resolves with the objectData
  */
-function findSubDirectories(basePath, remainingItems, foundDirectories, foundFiles) {
-    if (!foundDirectories) {
-        foundDirectories = [];
-        foundFiles = [];
-    }
+function checkContents(itemList, inPath, options, objectData = []) {
+    if (itemList.length > 0) {
+        let nextItem = { fsName: itemList.shift() };
+        nextItem.objectPath = path.join(inPath, nextItem.fsName);
 
-    if (remainingItems.length > 0) {
-        let checkPath = remainingItems.shift();
-        return stat(path.join(basePath, checkPath))
+        return stat(nextItem.objectPath)
             .catch(() => {
                 // Ignore any error, as lack of privileges can be ignored, and we're not following symlinks
                 return null;
             })
             .then(fileStats => {
-                if (!!fileStats && fileStats.isDirectory())
-                    foundDirectories.push(checkPath);
-                else
-                    foundFiles.push(checkPath);
+                nextItem.isDirectory = !!fileStats && fileStats.isDirectory();
+                if (!!options && !!options.returnProperties) {
+                    nextItem.stats = {};
+                    for (let prop in fileStats)
+                        if (options.returnProperties.indexOf(prop) >=0)
+                            nextItem.stats[prop] = fileStats[prop];
+                } else
+                    nextItem.stats = fileStats;
+                objectData.push(nextItem);
             })
-            .then(() => findSubDirectories(basePath, remainingItems, foundDirectories, foundFiles));
-    } else {
-        return { directories: foundDirectories.map(directory => { return { directory }; }), files: foundFiles };
-    }
+            .then(() => checkContents(itemList, inPath, options, objectData));
+
+    } else
+        return Promise.resolve(objectData);
 }
 
 module.exports.ReadSubDirectories = readSubDirectories;
