@@ -1,5 +1,5 @@
 // Node Modules
-const fs = require(`../fs`),
+const fs = require(`fs`).promises,
     path = require(`path`);
 
 /**
@@ -39,14 +39,7 @@ function createMissingDirectories(pathParts, confirmedRoot) {
                 let pCreateDirectory = Promise.resolve();
 
                 if (!directoryExists)
-                    pCreateDirectory = new Promise((resolve, reject) => {
-                        fs.nodeFs.mkdir(checkPath, (err) => {
-                            if (!!err)
-                                reject(err);
-                            else
-                                resolve();
-                        });
-                    });
+                    pCreateDirectory = fs.mkdir(checkPath);
 
                 return pCreateDirectory;
             })
