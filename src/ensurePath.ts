@@ -1,31 +1,29 @@
 // Node Modules
-const fs = require(`fs`).promises,
-    path = require(`path`);
+import { promises as fs } from "fs";
+import path from "path";
 
 /**
  * Ensure the full directory path exists before writing a file
- * @param {String} fullPathWithFile - The complete absolute path to the to-be-created file
- * @returns {Promise}
+ * @param fullPathWithFile - The complete absolute path to the to-be-created file
  */
-function ensurePath(fullPathWithFile) {
+function ensurePath(fullPathWithFile: string) {
     // Get an array of the path parts for the file's directory
-    let pathParts = path.dirname(fullPathWithFile).split(path.sep);
+    const pathParts = path.dirname(fullPathWithFile).split(path.sep);
 
     return createMissingDirectories(pathParts);
 }
 
 /**
  * Recursively check for the existance of a directory, and create it if missing
- * @param {Array<String>} pathParts - Components of the path remaining to be checked/created
- * @param {String} confirmedRoot - The root of the current pathParts
- * @returns {Promise}
+ * @param pathParts - Components of the path remaining to be checked/created
+ * @param confirmedRoot - The root of the current pathParts
  */
-function createMissingDirectories(pathParts, confirmedRoot) {
+function createMissingDirectories(pathParts: Array<string>, confirmedRoot?: string): Promise<void> {
     if (pathParts.length > 0) {
         if (confirmedRoot === undefined)
             confirmedRoot = path.sep;
 
-        let checkPath = path.join(confirmedRoot, pathParts.shift());
+        const checkPath = path.join(confirmedRoot, pathParts.shift());
 
         return fs.stat(checkPath)
             .then(() => { return true; })
@@ -48,4 +46,6 @@ function createMissingDirectories(pathParts, confirmedRoot) {
         return Promise.resolve();
 }
 
-module.exports.EnsurePathForFile = ensurePath;
+export {
+    ensurePath as EnsurePathForFile,
+};

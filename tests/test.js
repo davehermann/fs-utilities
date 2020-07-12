@@ -7,7 +7,7 @@ const expect = require(`chai`).expect;
 const assert = require(`assert`);
 
 // Application Modules
-const { EnsurePathForFile, ReadSubDirectories } = require(`../pathgen`);
+const { EnsurePathForFile, ReadSubDirectories } = require(`../dist/fsutilities`);
 
 describe(`Utilities`, function() {
     before(async function() {

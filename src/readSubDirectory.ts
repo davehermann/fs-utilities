@@ -1,17 +1,28 @@
 // Node Modules
-const path = require(`path`);
-const { readdir, stat } = require("fs").promises;
+import { promises as fs, Stats } from "fs";
+import path from "path";
+
+interface ReadOptions {
+    returnProperties: Array<string>;
+}
+
+interface DirectoryObject {
+    fsName: string;
+    objectPath?: string;
+    isDirectory?: boolean;
+    stats?: Object;
+    items?: Array<DirectoryObject>
+}
 
 /**
  * Read the items in a directory, and traverse subdirectories
- * @param {String} pathToRead - Root path to check
- * @param {Object} options - Read options
- * @param {Array<String>} options.returnProperties - List of stat properties to return with data
- * @returns {Array<Object>} List of found file system objects, with stat properties, subdirectories supply the same data
+ * @param pathToRead - Root path to check
+ * @param options - Read options
+ * @returns List of found file system objects, with stat properties, subdirectories supply the same data
  */
-async function readSubDirectories(pathToRead, options) {
+async function readSubDirectories(pathToRead: string, options: ReadOptions): Promise<Array<DirectoryObject>> {
     // Get the list of file system objects in the current directory
-    const directoryItems = await readdir(pathToRead);
+    const directoryItems = await fs.readdir(pathToRead);
 
     // Get data about all file system objects in the directory
     const directoryObjects = await checkContents(directoryItems, pathToRead, options);
@@ -30,23 +41,22 @@ async function readSubDirectories(pathToRead, options) {
 
 /**
  * Get stat data, and add additional needed data, to file system objects
- * @param {Array<String>} itemList - list of file system object names in the current directory
- * @param {String} inPath - current directory
- * @param {Object} options - Read options, passed directly from readSubDirectories
- * @param {Array<Object>} objectData - list of object details for the current directory
- * @returns {Promise<Array<Object>>} Resolves with the objectData
+ * @param itemList - list of file system object names in the current directory
+ * @param inPath - current directory
+ * @param options - Read options, passed directly from readSubDirectories
+ * @returns Resolves with the objectData
  */
-function checkContents(itemList, inPath, options, objectData = []) {
+function checkContents(itemList: Array<string>, inPath: string, options: ReadOptions, objectData: Array<DirectoryObject> = []): Promise<Array<DirectoryObject>> {
     if (itemList.length > 0) {
-        let nextItem = { fsName: itemList.shift() };
+        let nextItem: DirectoryObject = { fsName: itemList.shift() };
         nextItem.objectPath = path.join(inPath, nextItem.fsName);
 
-        return stat(nextItem.objectPath)
+        return fs.stat(nextItem.objectPath)
             .catch(() => {
                 // Ignore any error, as lack of privileges can be ignored, and we're not following symlinks
                 return null;
             })
-            .then(fileStats => {
+            .then((fileStats: Stats) => {
                 nextItem.isDirectory = !!fileStats && fileStats.isDirectory();
                 if (!!options && !!options.returnProperties) {
                     nextItem.stats = {};
@@ -63,4 +73,6 @@ function checkContents(itemList, inPath, options, objectData = []) {
         return Promise.resolve(objectData);
 }
 
-module.exports.ReadSubDirectories = readSubDirectories;
+export {
+    readSubDirectories as ReadSubDirectories,
+}
