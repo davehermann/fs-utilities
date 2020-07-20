@@ -1,6 +1,6 @@
 {
   "name": "@davehermann/fs-utilities",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "File system interaction",
   "main": "./dist/fsutilities.js",
   "types": "./dist/fsutilities.d.ts",
