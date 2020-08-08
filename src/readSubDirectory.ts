@@ -2,16 +2,16 @@
 import { promises as fs, Stats } from "fs";
 import path from "path";
 
-interface ReadOptions {
+interface IReadOptions {
     returnProperties: Array<string>;
 }
 
-interface DirectoryObject {
+interface IDirectoryObject {
     fsName: string;
     objectPath?: string;
     isDirectory?: boolean;
     stats?: Object;
-    items?: Array<DirectoryObject>
+    items?: Array<IDirectoryObject>
 }
 
 /**
@@ -20,7 +20,7 @@ interface DirectoryObject {
  * @param options - Read options
  * @returns List of found file system objects, with stat properties, subdirectories supply the same data
  */
-async function readSubDirectories(pathToRead: string, options?: ReadOptions): Promise<Array<DirectoryObject>> {
+async function readSubDirectories(pathToRead: string, options?: IReadOptions): Promise<Array<IDirectoryObject>> {
     // Get the list of file system objects in the current directory
     const directoryItems = await fs.readdir(pathToRead);
 
@@ -46,9 +46,9 @@ async function readSubDirectories(pathToRead: string, options?: ReadOptions): Pr
  * @param options - Read options, passed directly from readSubDirectories
  * @returns Resolves with the objectData
  */
-function checkContents(itemList: Array<string>, inPath: string, options: ReadOptions, objectData: Array<DirectoryObject> = []): Promise<Array<DirectoryObject>> {
+function checkContents(itemList: Array<string>, inPath: string, options: IReadOptions, objectData: Array<IDirectoryObject> = []): Promise<Array<IDirectoryObject>> {
     if (itemList.length > 0) {
-        let nextItem: DirectoryObject = { fsName: itemList.shift() };
+        let nextItem: IDirectoryObject = { fsName: itemList.shift() };
         nextItem.objectPath = path.join(inPath, nextItem.fsName);
 
         return fs.stat(nextItem.objectPath)
@@ -74,5 +74,7 @@ function checkContents(itemList: Array<string>, inPath: string, options: ReadOpt
 }
 
 export {
+    IDirectoryObject,
+    IReadOptions,
     readSubDirectories as ReadSubDirectories,
 }

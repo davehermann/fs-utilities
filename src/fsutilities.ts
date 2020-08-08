@@ -1,8 +1,10 @@
 // Utility Modules
 import { EnsurePathForFile } from "./ensurePath";
-import { ReadSubDirectories } from "./readSubDirectory";
+import { IDirectoryObject, IReadOptions, ReadSubDirectories } from "./readSubDirectory";
 
 export {
+    IDirectoryObject,
+    IReadOptions,
     EnsurePathForFile,
     ReadSubDirectories,
 };
