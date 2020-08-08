@@ -14,5 +14,5 @@ interface DirectoryObject {
  * @param options - Read options
  * @returns List of found file system objects, with stat properties, subdirectories supply the same data
  */
-declare function readSubDirectories(pathToRead: string, options: ReadOptions): Promise<Array<DirectoryObject>>;
+declare function readSubDirectories(pathToRead: string, options?: ReadOptions): Promise<Array<DirectoryObject>>;
 export { readSubDirectories as ReadSubDirectories, };
