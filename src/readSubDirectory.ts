@@ -20,7 +20,7 @@ interface DirectoryObject {
  * @param options - Read options
  * @returns List of found file system objects, with stat properties, subdirectories supply the same data
  */
-async function readSubDirectories(pathToRead: string, options: ReadOptions): Promise<Array<DirectoryObject>> {
+async function readSubDirectories(pathToRead: string, options?: ReadOptions): Promise<Array<DirectoryObject>> {
     // Get the list of file system objects in the current directory
     const directoryItems = await fs.readdir(pathToRead);
 
