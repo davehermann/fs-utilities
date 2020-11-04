@@ -9,6 +9,8 @@ const assert = require(`assert`);
 // Application Modules
 const { EnsurePathForFile, ReadSubDirectories } = require(`../dist/fsutilities`);
 
+const RANDOM_DIRECTORY = Math.floor(Math.random() * 100000);
+
 describe(`Utilities`, function() {
     before(async function() {
         const testPath = path.join(process.cwd(), `tests`, `generated`);
@@ -31,19 +33,19 @@ describe(`Utilities`, function() {
     });
 
     describe(`ensurePath`, function() {
-        it(`should create directories`, function() {
+        it(`should create directories (./tests/generated/example & ./tests/generated/example/${RANDOM_DIRECTORY})`, function() {
             return assert.doesNotReject(() =>
                 // Promise.reject(`failed`)
-                EnsurePathForFile(path.join(process.cwd(), `tests`, `generated`, `example`, `${Math.floor(Math.random() * 100000)}`, `dummyfile.txt`))
+                EnsurePathForFile(path.join(process.cwd(), `tests`, `generated`, `example`, `${RANDOM_DIRECTORY}`, `dummyfile.txt`))
             );
         });
 
         it(`should read those directories, and confirm they exist`, function() {
-            return assert.doesNotReject(() => {
-                return ReadSubDirectories(path.join(process.cwd(), `tests`))
-                    .then(data => { console.log(data); })
-                    .catch(err => { console.log(err); })
-            });
+            return ReadSubDirectories(path.join(process.cwd(), `tests`))
+                .then(data => {
+                    const fsName = data[0].items[0].items[0].fsName;
+                    return assert.strictEqual(fsName, `` + RANDOM_DIRECTORY);
+                });
         });
     });
 });
