@@ -34,8 +34,28 @@ interface IDirectoryObject {
  * @returns List of found file system objects, with stat properties, subdirectories supply the same data
  */
 async function readSubDirectories(pathToRead: string, options?: IReadOptions): Promise<Array<IDirectoryObject>> {
-    // Get the list of file system objects in the current directory
-    const directoryItems = await fs.readdir(pathToRead);
+    const directoryItems: Array<string> = [];
+    let directoryPath: string;
+
+    // Check the root object to see if it's a directory, or just a file
+    const rootStats = await fs.stat(pathToRead);
+
+    // In case of a file
+    if (!rootStats.isDirectory()) {
+        // The only item to read in the directory is the path
+        directoryItems.push(path.basename(pathToRead));
+        // Use the containing directory as the directory to read
+        directoryPath = path.dirname(pathToRead);
+    } else {
+        // In case of a directory
+
+        // Get the list of file system objects in the current directory
+        const itemsInDirectory = await fs.readdir(pathToRead);
+        itemsInDirectory.forEach(i => directoryItems.push(i));
+
+        // Use the passed-in path for the root path
+        directoryPath = pathToRead;
+    }
 
     // Get data about all file system objects in the directory
     const directoryObjects = await checkContents(directoryItems, pathToRead, options);
