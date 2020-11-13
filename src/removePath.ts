@@ -11,10 +11,20 @@ async function removePath(fileSystemPath: string, verbose = false): Promise<void
     if (verbose)
         console.log(`Remove ${fileSystemPath}`);
 
-    // Get path contents
-    const fsObjects = await ReadSubDirectories(fileSystemPath, { returnProperties: [], includeRoot: true });
+    try {
+        // Get path contents
+        const fsObjects = await ReadSubDirectories(fileSystemPath, { returnProperties: [], includeRoot: true });
 
-    await removeFileSystemObjects(fsObjects, verbose);
+        console.log(JSON.stringify(fsObjects, null, 4));
+
+        await removeFileSystemObjects(fsObjects, verbose);
+    } catch (err) {
+        if (err.code == `ENOENT`) {
+            if (verbose)
+                console.log(`    - NOT FOUND (${fileSystemPath})`);
+        } else
+            throw err;
+    }
 }
 
 async function removeFileSystemObjects(fsObjects: Array<IDirectoryObject>, verbose: boolean): Promise<void> {

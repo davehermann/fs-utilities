@@ -3,7 +3,7 @@
 import * as path from "path";
 
 import { DisplayHelp } from "./help";
-import { RemovePath } from "../fsutilities";
+import { RemovePath, MovePath } from "../fsutilities";
 
 //#region CLI Actions
 /**
@@ -15,16 +15,39 @@ async function Delete(params: Array<string>): Promise<boolean> {
     if (params.length !== 1)
         return true;
 
-    let pathToRemove = path.normalize(params.shift());
-
-    if (!path.isAbsolute(pathToRemove))
-        pathToRemove = path.join(process.cwd(), pathToRemove);
+    const pathToRemove = getAbsolutePath(params.shift());
 
     await RemovePath(pathToRemove, true);
 
     return false;
 }
+
+/**
+ * Move a file or directory from the specified source path to a destination
+ * @param params - The arguments array, expecting exactly two arguments: the source and destination paths
+ */
+async function Move(params: Array<string>): Promise<boolean> {
+    if (params.length !== 2)
+        return true;
+
+    const sourcePath = getAbsolutePath(params.shift()),
+        destinationPath = getAbsolutePath(params.shift());
+
+    await MovePath(sourcePath, destinationPath, true);
+
+    return false;
+}
 //#endregion CLI Actions
+
+function getAbsolutePath(pathToCheck: string): string {
+    const normalizedPath = path.normalize(pathToCheck);
+    let absolutePath = normalizedPath;
+
+    if (!path.isAbsolute(normalizedPath))
+        absolutePath = path.join(process.cwd(), normalizedPath);
+
+    return absolutePath;
+}
 
 async function main() {
     // Check any CLI parameters after the first 2 (node, and the javascript path)
@@ -40,6 +63,10 @@ async function main() {
         switch (action) {
             case `delete`:
                 showHelp = await Delete(args);
+                break;
+
+            case `move`:
+                showHelp = await Move(args);
                 break;
 
             default:

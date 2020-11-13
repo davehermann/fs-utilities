@@ -4,13 +4,29 @@ const HELP_TEXT =
 
 fsutility <action> <options>
 
+**All paths below can be relative or absolute**
+
 Available <action>s
 
-delete      -   Delete a file or directory, if it exists
+delete  -   Delete a file or directory, if it exists
 
-                <options>
-                **REQUIRED**
-                -   path-to-object - path to the file system object to delete
+            <options>
+            **REQUIRED**
+            - path-to-object - path to the file system object to delete
+
+            *Usage*
+            fsutility delete path-to-object
+
+move    -   Move a file or directory, if it exists
+            - This will DELETE an existing file/directory at the destination
+
+            <options>
+            **REQUIRED**
+            - path-to-source - path to the file system object to be moved
+            - path-to-destination - final path of the file system object
+
+            *Usage*
+            fsutility move path-to-source path-to-destination
 `;
 
 function displayHelp() {
