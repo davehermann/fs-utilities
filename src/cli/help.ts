@@ -8,6 +8,17 @@ fsutility <action> <options>
 
 Available <action>s
 
+copy    -   Copy a file or directory, if it exists
+            - This will DELETE an existing file/directory at the destination
+
+            <options>
+            **REQUIRED**
+            - path-to-source - path to the file system object to be moved
+            - path-to-destination - final path of the file system object
+
+            *Usage*
+            fsutility copy path-to-source path-to-destination
+
 delete  -   Delete a file or directory, if it exists
 
             <options>

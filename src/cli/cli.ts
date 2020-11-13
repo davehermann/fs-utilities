@@ -3,9 +3,21 @@
 import * as path from "path";
 
 import { DisplayHelp } from "./help";
-import { RemovePath, MovePath } from "../fsutilities";
+import { RemovePath, MovePath, CopyPath } from "../fsutilities";
 
 //#region CLI Actions
+async function Copy(params: Array<string>): Promise<boolean> {
+    if (params.length !== 2)
+        return true;
+
+    const sourcePath = getAbsolutePath(params.shift()),
+        destinationPath = getAbsolutePath(params.shift());
+
+    await CopyPath(sourcePath, destinationPath, true);
+
+    return false;
+}
+
 /**
  * Remove a file or directory at the specified path
  * @param params - The arguments array, expecting only one argument as the path to the file to remove
@@ -52,6 +64,7 @@ function getAbsolutePath(pathToCheck: string): string {
 async function main() {
     // Check any CLI parameters after the first 2 (node, and the javascript path)
     const args = process.argv.filter(((val, idx) => { return idx > 1; })).map(val => val.toLowerCase());
+    console.log(args);
 
     // Display help when no arguments are used, or help is specifically requested
     let showHelp = ((args.length == 0) || (args.indexOf(`--help`) >= 0));
@@ -61,6 +74,10 @@ async function main() {
         const action = args.shift();
 
         switch (action) {
+            case `copy`:
+                showHelp = await Copy(args);
+                break;
+
             case `delete`:
                 showHelp = await Delete(args);
                 break;

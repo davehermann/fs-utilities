@@ -15,8 +15,6 @@ async function removePath(fileSystemPath: string, verbose = false): Promise<void
         // Get path contents
         const fsObjects = await ReadSubDirectories(fileSystemPath, { returnProperties: [], includeRoot: true });
 
-        console.log(JSON.stringify(fsObjects, null, 4));
-
         await removeFileSystemObjects(fsObjects, verbose);
     } catch (err) {
         if (err.code == `ENOENT`) {
