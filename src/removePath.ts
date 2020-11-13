@@ -12,7 +12,7 @@ async function removePath(fileSystemPath: string, verbose = false): Promise<void
         console.log(`Remove ${fileSystemPath}`);
 
     // Get path contents
-    const fsObjects = await ReadSubDirectories(fileSystemPath, { returnProperties: [] });
+    const fsObjects = await ReadSubDirectories(fileSystemPath, { returnProperties: [], includeRoot: true });
 
     await removeFileSystemObjects(fsObjects, verbose);
 }

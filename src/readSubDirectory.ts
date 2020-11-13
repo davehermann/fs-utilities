@@ -10,7 +10,9 @@ interface IReadOptions {
      * @remarks
      * See the [NodeJS FS Stats class documentation](https://nodejs.org/dist/latest/docs/api/fs.html#fs_class_fs_stats) for your NodeJS version to get a list of available properties
      */
-    returnProperties: Array<string>;
+    returnProperties?: Array<string>;
+    /** When path is a directory, include the specified directory in the returned objects */
+    includeRoot?: boolean;
 }
 
 /** Directory data */
@@ -41,7 +43,7 @@ async function readSubDirectories(pathToRead: string, options?: IReadOptions): P
     const rootStats = await fs.stat(pathToRead);
 
     // In case of a file
-    if (!rootStats.isDirectory()) {
+    if (!rootStats.isDirectory() || options?.includeRoot) {
         // The only item to read in the directory is the path
         directoryItems.push(path.basename(pathToRead));
         // Use the containing directory as the directory to read
@@ -57,8 +59,12 @@ async function readSubDirectories(pathToRead: string, options?: IReadOptions): P
         directoryPath = pathToRead;
     }
 
+    // ALWAYS set options.includeRoot to false as it's only needed on the first call of readSubDirectories
+    if (!!options)
+        options.includeRoot = false;
+
     // Get data about all file system objects in the directory
-    const directoryObjects = await checkContents(directoryItems, pathToRead, options);
+    const directoryObjects = await checkContents(directoryItems, directoryPath, options);
 
     // Loop through each file system object
     for (let idxObjects = 0, total = directoryObjects.length; idxObjects < total; idxObjects++) {
