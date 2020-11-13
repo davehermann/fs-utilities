@@ -8,6 +8,7 @@
         "target": "ES6"
     },
     "files": [
-        "./src/fsutilities.ts"
+        "./src/fsutilities.ts",
+        "./src/cli/cli.ts"
     ]
 }

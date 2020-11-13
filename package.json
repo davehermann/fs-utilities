@@ -14,9 +14,13 @@
     "node": ">=10.0.0"
   },
   "scripts": {
+    "cli": "node ./dist/cli/cli.js",
     "prepare": "tsc",
     "build": "tsc",
     "test": "./node_modules/.bin/mocha ./tests/test.js"
+  },
+  "bin": {
+    "fsutility": "./dist/cli/cli.js"
   },
   "devDependencies": {
     "@types/node": "^14.0.22",
