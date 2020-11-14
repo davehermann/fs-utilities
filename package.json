@@ -15,7 +15,7 @@
   },
   "scripts": {
     "cli": "node ./dist/cli/cli.js",
-    "prepare": "tsc -b ./src",
+    "prepare": "npm run build",
     "build": "tsc -b ./src",
     "build:test": "tsc -b ./tests",
     "test": "./node_modules/.bin/mocha ./tests/test.js"
