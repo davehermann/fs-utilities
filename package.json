@@ -14,11 +14,19 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "prepare": "tsc",
-    "build": "tsc",
+    "cli": "node ./dist/cli/cli.js",
+    "prepare": "tsc -b ./src",
+    "build": "tsc -b ./src",
+    "build:test": "tsc -b ./tests",
     "test": "./node_modules/.bin/mocha ./tests/test.js"
   },
+  "bin": {
+    "fsutility": "./dist/cli/cli.js"
+  },
   "devDependencies": {
+    "@davehermann/random-generator": "^0.3.0",
+    "@types/chai": "^4.2.14",
+    "@types/mocha": "^8.0.4",
     "@types/node": "^14.0.22",
     "chai": "^4.2.0",
     "mocha": "^7.2.0",
