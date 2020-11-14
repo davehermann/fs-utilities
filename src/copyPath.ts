@@ -6,8 +6,8 @@ import { EnsurePathForFile } from "./ensurePath";
 
 /**
  * Copy a file or directory
- * @param sourcePath
- * @param destinationPath
+ * @param sourcePath - absolute path to the file system object to be copied
+ * @param destinationPath - absolute path to the location of the copy
  * @param verbose - log delete actions to the console
  */
 async function copyPath(sourcePath: string, destinationPath: string, verbose = false): Promise<void> {
@@ -21,7 +21,8 @@ async function copyPath(sourcePath: string, destinationPath: string, verbose = f
         await copyFileSystemObjects(fsObjects, sourcePath, destinationPath, verbose);
     } catch (err) {
         if ((err.code == `ENOENT`) && (err.path == sourcePath)) {
-            console.log(`    - NOT FOUND (${sourcePath})`);
+            if (verbose)
+                console.log(`    - NOT FOUND (${sourcePath})`);
         } else
             throw err;
     }

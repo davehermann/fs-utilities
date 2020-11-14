@@ -4,8 +4,8 @@ import { ReadSubDirectories, IDirectoryObject } from "./readSubDirectory";
 
 /**
  * Move a file or directory
- * @param sourcePath
- * @param destinationPath
+ * @param sourcePath - absolute path to the file system object to be moved
+ * @param destinationPath - absolute path to the future location of the file system object
  * @param verbose - log delete actions to the console
  */
 async function movePath(sourcePath: string, destinationPath: string, verbose = false): Promise<void> {
@@ -19,7 +19,8 @@ async function movePath(sourcePath: string, destinationPath: string, verbose = f
         await moveFileSystemObjects(fsObjects, destinationPath, verbose);
     } catch (err) {
         if ((err.code == `ENOENT`) && (err.path == sourcePath)) {
-            console.log(`    - NOT FOUND (${sourcePath})`);
+            if (verbose)
+                console.log(`    - NOT FOUND (${sourcePath})`);
         } else
             throw err;
     }
